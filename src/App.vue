@@ -28,27 +28,29 @@ export default {
     const mainTimer = ref(480)
     const secondTimer = ref(720)
     const running= ref(false)
-
+    const mainTimerEnd = ref(0)
+    const secondTimerEnd =ref(0)
     
 
     let interval
     const timerRunning = () => {
       
-    
+      mainTimerEnd.value = Date.now() + mainTimer.value * 1000
+      secondTimerEnd.value = Date.now() + secondTimer.value * 1000
+
       running.value = true
-    interval =  setInterval(()=>{
+      interval =  setInterval(()=>{
         if (mainTimer.value>0) {
-          mainTimer.value = mainTimer.value -1
+          mainTimer.value = Math.ceil((mainTimerEnd.value - Date.now()) / 1000)
         }
-        
          if (secondTimer.value>0) {
-          secondTimer.value = secondTimer.value -1
+            secondTimer.value = Math.ceil((secondTimerEnd.value - Date.now()) / 1000)
         }
       },1000)
     }
     const addMinute = () => {
-      mainTimer.value = mainTimer.value + 60
-      secondTimer.value = secondTimer.value + 60
+      mainTimerEnd.value = mainTimerEnd.value + 60000
+      secondTimerEnd.value = secondTimerEnd.value + 60000
     }
     const stopTimer = () => {
       running.value = false
@@ -59,22 +61,25 @@ export default {
       running.value = false
       mainTimer.value = 480
       secondTimer.value = 720
+      mainTimerEnd.value= 0
+      secondTimerEnd.value = 0
       clearInterval(interval)
 
     }
 
     const showTime = (sec) => {
-    const minutes = Math.floor(sec/60)
-    const seconds = sec%60
+      const minutes = Math.floor(sec/60)
+      const seconds = sec%60
 
-    const showMinutes = minutes.toString().length === 1 ? `0${minutes}` : `${minutes}`
-    const showSeconds = seconds.toString().length === 1 ? `0${seconds}` : `${seconds}`
+      const showMinutes = minutes.toString().length === 1 ? `0${minutes}` : `${minutes}`
+      const showSeconds = seconds.toString().length === 1 ? `0${seconds}` : `${seconds}`
 
-    return `${showMinutes}:${showSeconds}`
-}
+      return `${showMinutes}:${showSeconds}`
+    }   
 
   const addTwoMinutes = () => {
-      mainTimer.value = mainTimer.value + 120
+      mainTimerEnd.value = Date.now() + 120000
+      mainTimer.value = Math.ceil((mainTimerEnd.value - Date.now()) / 1000)    
   }
 
     return{ mainTimer, secondTimer, timerRunning, stopTimer, addMinute, resetTimer, showTime, running, addTwoMinutes}
@@ -84,12 +89,5 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
